@@ -187,4 +187,22 @@ return [
             'deleted_at_helper'         => '',
         ],
     ],
+    'productCustom'     => [
+        'title'          => 'Product Custom',
+        'title_singular' => 'Product Custom',
+        'fields'         => [
+            'id'                => 'ID',
+            'id_helper'         => '',
+            'upc'               => 'Upc',
+            'upc_helper'        => '',
+            'brand'             => 'Brand',
+            'brand_helper'      => '',
+            'created_at'        => 'Created At',
+            'created_at_helper' => '',
+            'updated_at'        => 'Updated At',
+            'updated_at_helper' => '',
+            'deleted_at'        => 'Deleted at',
+            'deleted_at_helper' => '',
+        ],
+    ],
 ];
