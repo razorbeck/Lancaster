@@ -44,4 +44,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('contact-contacts/destroy', 'ContactContactsController@massDestroy')->name('contact-contacts.massDestroy');
 
     Route::resource('contact-contacts', 'ContactContactsController');
+
+    Route::delete('product-customs/destroy', 'ProductCustomController@massDestroy')->name('product-customs.massDestroy');
+
+    Route::resource('product-customs', 'ProductCustomController');
 });

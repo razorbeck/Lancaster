@@ -16,4 +16,6 @@ Route::group(['prefix' => 'v1', 'as' => 'admin.', 'namespace' => 'Api\V1\Admin']
     Route::apiResource('contact-companies', 'ContactCompanyApiController');
 
     Route::apiResource('contact-contacts', 'ContactContactsApiController');
+
+    Route::apiResource('product-customs', 'ProductCustomApiController');
 });

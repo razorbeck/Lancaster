@@ -162,6 +162,18 @@
                         </ul>
                     </li>
                 @endcan
+                @can('product_custom_access')
+                    <li class="nav-item">
+                        <a href="{{ route("admin.product-customs.index") }}" class="nav-link {{ request()->is('admin/product-customs') || request()->is('admin/product-customs/*') ? 'active' : '' }}">
+                            <i class="fa-fw fas fa-cogs">
+
+                            </i>
+                            <p>
+                                <span>{{ trans('cruds.productCustom.title') }}</span>
+                            </p>
+                        </a>
+                    </li>
+                @endcan
                 <li class="nav-item">
                     <a href="#" class="nav-link" onclick="event.preventDefault(); document.getElementById('logoutform').submit();">
                         <p>
