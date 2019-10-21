@@ -7,9 +7,17 @@
     </div>
 
     <div class="card-body">
-        <div>
+        <div class="mb-2">
             <table class="table table-bordered table-striped">
                 <tbody>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.product.fields.id') }}
+                        </th>
+                        <td>
+                            {{ $product->id }}
+                        </td>
+                    </tr>
                     <tr>
                         <th>
                             {{ trans('cruds.product.fields.name') }}
@@ -58,13 +66,22 @@
                         <th>
                             {{ trans('cruds.product.fields.photo') }}
                         </th>
+                        <td>
+                            @if($product->photo)
+                                <a href="{{ $product->photo->getUrl() }}" target="_blank">
+                                    <img src="{{ $product->photo->getUrl('thumb') }}" width="50px" height="50px">
+                                </a>
+                            @endif
+                        </td>
                     </tr>
                 </tbody>
             </table>
             <a style="margin-top:20px;" class="btn btn-default" href="{{ url()->previous() }}">
-                Back
+                {{ trans('global.back_to_list') }}
             </a>
         </div>
+
+
     </div>
 </div>
 @endsection

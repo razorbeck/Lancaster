@@ -6,12 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\Models\Media;
 
 class Product extends Model implements HasMedia
 {
     use SoftDeletes, HasMediaTrait;
 
     public $table = 'products';
+
+    protected $appends = [
+        'photo',
+    ];
 
     protected $dates = [
         'created_at',
@@ -28,6 +33,11 @@ class Product extends Model implements HasMedia
         'description',
     ];
 
+    public function registerMediaConversions(Media $media = null)
+    {
+        $this->addMediaConversion('thumb')->width(50)->height(50);
+    }
+
     public function categories()
     {
         return $this->belongsToMany(ProductCategory::class);
@@ -38,12 +48,13 @@ class Product extends Model implements HasMedia
         return $this->belongsToMany(ProductTag::class);
     }
 
-    public function getphotoAttribute()
+    public function getPhotoAttribute()
     {
         $file = $this->getMedia('photo')->last();
 
         if ($file) {
-            $file->url = $file->getUrl();
+            $file->url       = $file->getUrl();
+            $file->thumbnail = $file->getUrl('thumb');
         }
 
         return $file;

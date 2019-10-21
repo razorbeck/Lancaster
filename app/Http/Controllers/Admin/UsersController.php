@@ -8,12 +8,15 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Role;
 use App\User;
+use Gate;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class UsersController extends Controller
 {
     public function index()
     {
-        abort_unless(\Gate::allows('user_access'), 403);
+        abort_if(Gate::denies('user_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $users = User::all();
 
@@ -22,7 +25,7 @@ class UsersController extends Controller
 
     public function create()
     {
-        abort_unless(\Gate::allows('user_create'), 403);
+        abort_if(Gate::denies('user_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $roles = Role::all()->pluck('title', 'id');
 
@@ -31,8 +34,6 @@ class UsersController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        abort_unless(\Gate::allows('user_create'), 403);
-
         $user = User::create($request->all());
         $user->roles()->sync($request->input('roles', []));
 
@@ -41,7 +42,7 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
-        abort_unless(\Gate::allows('user_edit'), 403);
+        abort_if(Gate::denies('user_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $roles = Role::all()->pluck('title', 'id');
 
@@ -52,8 +53,6 @@ class UsersController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        abort_unless(\Gate::allows('user_edit'), 403);
-
         $user->update($request->all());
         $user->roles()->sync($request->input('roles', []));
 
@@ -62,7 +61,7 @@ class UsersController extends Controller
 
     public function show(User $user)
     {
-        abort_unless(\Gate::allows('user_show'), 403);
+        abort_if(Gate::denies('user_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user->load('roles');
 
@@ -71,7 +70,7 @@ class UsersController extends Controller
 
     public function destroy(User $user)
     {
-        abort_unless(\Gate::allows('user_delete'), 403);
+        abort_if(Gate::denies('user_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user->delete();
 
@@ -82,6 +81,6 @@ class UsersController extends Controller
     {
         User::whereIn('id', request('ids'))->delete();
 
-        return response(null, 204);
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -16,11 +16,14 @@
 
     <div class="card-body">
         <div class="table-responsive">
-            <table class=" table table-bordered table-striped table-hover datatable">
+            <table class=" table table-bordered table-striped table-hover datatable datatable-Permission">
                 <thead>
                     <tr>
                         <th width="10">
 
+                        </th>
+                        <th>
+                            {{ trans('cruds.permission.fields.id') }}
                         </th>
                         <th>
                             {{ trans('cruds.permission.fields.title') }}
@@ -37,6 +40,9 @@
 
                             </td>
                             <td>
+                                {{ $permission->id ?? '' }}
+                            </td>
+                            <td>
                                 {{ $permission->title ?? '' }}
                             </td>
                             <td>
@@ -45,11 +51,13 @@
                                         {{ trans('global.view') }}
                                     </a>
                                 @endcan
+
                                 @can('permission_edit')
                                     <a class="btn btn-xs btn-info" href="{{ route('admin.permissions.edit', $permission->id) }}">
                                         {{ trans('global.edit') }}
                                     </a>
                                 @endcan
+
                                 @can('permission_delete')
                                     <form action="{{ route('admin.permissions.destroy', $permission->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                         <input type="hidden" name="_method" value="DELETE">
@@ -57,6 +65,7 @@
                                         <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
                                     </form>
                                 @endcan
+
                             </td>
 
                         </tr>
@@ -64,6 +73,8 @@
                 </tbody>
             </table>
         </div>
+
+
     </div>
 </div>
 @endsection
@@ -71,6 +82,8 @@
 @parent
 <script>
     $(function () {
+  let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+@can('permission_delete')
   let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
   let deleteButton = {
     text: deleteButtonTrans,
@@ -97,12 +110,18 @@
       }
     }
   }
-  let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-@can('permission_delete')
   dtButtons.push(deleteButton)
 @endcan
 
-  $('.datatable:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+  $.extend(true, $.fn.dataTable.defaults, {
+    order: [[ 1, 'desc' ]],
+    pageLength: 100,
+  });
+  $('.datatable-Permission:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+        $($.fn.dataTable.tables(true)).DataTable()
+            .columns.adjust();
+    });
 })
 
 </script>

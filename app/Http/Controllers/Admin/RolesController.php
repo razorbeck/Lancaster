@@ -8,12 +8,15 @@ use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Permission;
 use App\Role;
+use Gate;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class RolesController extends Controller
 {
     public function index()
     {
-        abort_unless(\Gate::allows('role_access'), 403);
+        abort_if(Gate::denies('role_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $roles = Role::all();
 
@@ -22,7 +25,7 @@ class RolesController extends Controller
 
     public function create()
     {
-        abort_unless(\Gate::allows('role_create'), 403);
+        abort_if(Gate::denies('role_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $permissions = Permission::all()->pluck('title', 'id');
 
@@ -31,8 +34,6 @@ class RolesController extends Controller
 
     public function store(StoreRoleRequest $request)
     {
-        abort_unless(\Gate::allows('role_create'), 403);
-
         $role = Role::create($request->all());
         $role->permissions()->sync($request->input('permissions', []));
 
@@ -41,7 +42,7 @@ class RolesController extends Controller
 
     public function edit(Role $role)
     {
-        abort_unless(\Gate::allows('role_edit'), 403);
+        abort_if(Gate::denies('role_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $permissions = Permission::all()->pluck('title', 'id');
 
@@ -52,8 +53,6 @@ class RolesController extends Controller
 
     public function update(UpdateRoleRequest $request, Role $role)
     {
-        abort_unless(\Gate::allows('role_edit'), 403);
-
         $role->update($request->all());
         $role->permissions()->sync($request->input('permissions', []));
 
@@ -62,7 +61,7 @@ class RolesController extends Controller
 
     public function show(Role $role)
     {
-        abort_unless(\Gate::allows('role_show'), 403);
+        abort_if(Gate::denies('role_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $role->load('permissions');
 
@@ -71,7 +70,7 @@ class RolesController extends Controller
 
     public function destroy(Role $role)
     {
-        abort_unless(\Gate::allows('role_delete'), 403);
+        abort_if(Gate::denies('role_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $role->delete();
 
@@ -82,6 +81,6 @@ class RolesController extends Controller
     {
         Role::whereIn('id', request('ids'))->delete();
 
-        return response(null, 204);
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }

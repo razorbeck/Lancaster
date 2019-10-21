@@ -23,4 +23,9 @@ class ProductTag extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
 }
