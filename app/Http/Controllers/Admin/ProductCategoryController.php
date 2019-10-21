@@ -8,8 +8,9 @@ use App\Http\Requests\MassDestroyProductCategoryRequest;
 use App\Http\Requests\StoreProductCategoryRequest;
 use App\Http\Requests\UpdateProductCategoryRequest;
 use App\ProductCategory;
+use Gate;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductCategoryController extends Controller
 {
@@ -17,7 +18,7 @@ class ProductCategoryController extends Controller
 
     public function index()
     {
-        abort_unless(\Gate::allows('product_category_access'), 403);
+        abort_if(Gate::denies('product_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $productCategories = ProductCategory::all();
 
@@ -26,15 +27,13 @@ class ProductCategoryController extends Controller
 
     public function create()
     {
-        abort_unless(\Gate::allows('product_category_create'), 403);
+        abort_if(Gate::denies('product_category_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('admin.productCategories.create');
     }
 
     public function store(StoreProductCategoryRequest $request)
     {
-        abort_unless(\Gate::allows('product_category_create'), 403);
-
         $productCategory = ProductCategory::create($request->all());
 
         if ($request->input('photo', false)) {
@@ -46,15 +45,13 @@ class ProductCategoryController extends Controller
 
     public function edit(ProductCategory $productCategory)
     {
-        abort_unless(\Gate::allows('product_category_edit'), 403);
+        abort_if(Gate::denies('product_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('admin.productCategories.edit', compact('productCategory'));
     }
 
     public function update(UpdateProductCategoryRequest $request, ProductCategory $productCategory)
     {
-        abort_unless(\Gate::allows('product_category_edit'), 403);
-
         $productCategory->update($request->all());
 
         if ($request->input('photo', false)) {
@@ -70,14 +67,14 @@ class ProductCategoryController extends Controller
 
     public function show(ProductCategory $productCategory)
     {
-        abort_unless(\Gate::allows('product_category_show'), 403);
+        abort_if(Gate::denies('product_category_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('admin.productCategories.show', compact('productCategory'));
     }
 
     public function destroy(ProductCategory $productCategory)
     {
-        abort_unless(\Gate::allows('product_category_delete'), 403);
+        abort_if(Gate::denies('product_category_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $productCategory->delete();
 
@@ -88,6 +85,6 @@ class ProductCategoryController extends Controller
     {
         ProductCategory::whereIn('id', request('ids'))->delete();
 
-        return response(null, 204);
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }

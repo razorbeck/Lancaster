@@ -13,9 +13,9 @@
                 <label for="name">{{ trans('cruds.productCategory.fields.name') }}*</label>
                 <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($productCategory) ? $productCategory->name : '') }}" required>
                 @if($errors->has('name'))
-                    <p class="help-block">
+                    <em class="invalid-feedback">
                         {{ $errors->first('name') }}
-                    </p>
+                    </em>
                 @endif
                 <p class="helper-block">
                     {{ trans('cruds.productCategory.fields.name_helper') }}
@@ -25,9 +25,9 @@
                 <label for="description">{{ trans('cruds.productCategory.fields.description') }}</label>
                 <textarea id="description" name="description" class="form-control ">{{ old('description', isset($productCategory) ? $productCategory->description : '') }}</textarea>
                 @if($errors->has('description'))
-                    <p class="help-block">
+                    <em class="invalid-feedback">
                         {{ $errors->first('description') }}
-                    </p>
+                    </em>
                 @endif
                 <p class="helper-block">
                     {{ trans('cruds.productCategory.fields.description_helper') }}
@@ -39,9 +39,9 @@
 
                 </div>
                 @if($errors->has('photo'))
-                    <p class="help-block">
+                    <em class="invalid-feedback">
                         {{ $errors->first('photo') }}
-                    </p>
+                    </em>
                 @endif
                 <p class="helper-block">
                     {{ trans('cruds.productCategory.fields.photo_helper') }}
@@ -51,6 +51,8 @@
                 <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
             </div>
         </form>
+
+
     </div>
 </div>
 @endsection
@@ -77,14 +79,16 @@
     },
     removedfile: function (file) {
       file.previewElement.remove()
-      $('form').find('input[name="photo"]').remove()
-      this.options.maxFiles = this.options.maxFiles + 1
+      if (file.status !== 'error') {
+        $('form').find('input[name="photo"]').remove()
+        this.options.maxFiles = this.options.maxFiles + 1
+      }
     },
     init: function () {
 @if(isset($productCategory) && $productCategory->photo)
       var file = {!! json_encode($productCategory->photo) !!}
           this.options.addedfile.call(this, file)
-      this.options.thumbnail.call(this, file, file.url)
+      this.options.thumbnail.call(this, file, '{{ $productCategory->photo->getUrl('thumb') }}')
       file.previewElement.classList.add('dz-complete')
       $('form').append('<input type="hidden" name="photo" value="' + file.file_name + '">')
       this.options.maxFiles = this.options.maxFiles - 1

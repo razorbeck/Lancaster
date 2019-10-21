@@ -16,11 +16,14 @@
 
     <div class="card-body">
         <div class="table-responsive">
-            <table class=" table table-bordered table-striped table-hover datatable">
+            <table class=" table table-bordered table-striped table-hover datatable datatable-Product">
                 <thead>
                     <tr>
                         <th width="10">
 
+                        </th>
+                        <th>
+                            {{ trans('cruds.product.fields.id') }}
                         </th>
                         <th>
                             {{ trans('cruds.product.fields.name') }}
@@ -52,6 +55,9 @@
 
                             </td>
                             <td>
+                                {{ $product->id ?? '' }}
+                            </td>
+                            <td>
                                 {{ $product->name ?? '' }}
                             </td>
                             <td>
@@ -73,7 +79,7 @@
                             <td>
                                 @if($product->photo)
                                     <a href="{{ $product->photo->getUrl() }}" target="_blank">
-                                        <img src="{{ $product->photo->getUrl() }}" width="150px">
+                                        <img src="{{ $product->photo->getUrl('thumb') }}" width="50px" height="50px">
                                     </a>
                                 @endif
                             </td>
@@ -83,11 +89,13 @@
                                         {{ trans('global.view') }}
                                     </a>
                                 @endcan
+
                                 @can('product_edit')
                                     <a class="btn btn-xs btn-info" href="{{ route('admin.products.edit', $product->id) }}">
                                         {{ trans('global.edit') }}
                                     </a>
                                 @endcan
+
                                 @can('product_delete')
                                     <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                         <input type="hidden" name="_method" value="DELETE">
@@ -95,6 +103,7 @@
                                         <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
                                     </form>
                                 @endcan
+
                             </td>
 
                         </tr>
@@ -102,6 +111,8 @@
                 </tbody>
             </table>
         </div>
+
+
     </div>
 </div>
 @endsection
@@ -109,6 +120,8 @@
 @parent
 <script>
     $(function () {
+  let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+@can('product_delete')
   let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
   let deleteButton = {
     text: deleteButtonTrans,
@@ -135,12 +148,18 @@
       }
     }
   }
-  let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-@can('product_delete')
   dtButtons.push(deleteButton)
 @endcan
 
-  $('.datatable:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+  $.extend(true, $.fn.dataTable.defaults, {
+    order: [[ 1, 'desc' ]],
+    pageLength: 100,
+  });
+  $('.datatable-Product:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+        $($.fn.dataTable.tables(true)).DataTable()
+            .columns.adjust();
+    });
 })
 
 </script>
